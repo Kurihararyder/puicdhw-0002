@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card chat-card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <span>🏪 日本便利商店情境模擬</span>
+                <span class="badge bg-light text-dark">AI 老師在線中</span>
+            </div>
+            
+            <div class="card-body chat-history" id="chat-box" style="height: 400px; overflow-y: auto; background: #f9f9f9;">
+                <div class="d-flex justify-content-start mb-3">
+                    <div class="bg-light p-3 rounded border">
+                        いらっしゃいませ！(歡迎光臨！請問需要什麼嗎？)
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <div class="input-group">
+                    <input type="text" id="user-input" class="form-control" placeholder="請輸入日文回應... (例如: お弁当を温めてください)">
+                    <button class="btn btn-primary" onclick="sendMessage()">發送 🚀</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let chatHistory = [];
+
+    function sendMessage() {
+        const inputField = document.getElementById('user-input');
+        const message = inputField.value;
+        if (!message) return;
+
+        // 1. 顯示使用者的訊息
+        appendMessage(message, 'user');
+        inputField.value = '';
+
+        // 2. 傳送給後端 AI
+        fetch('/api/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ 
+                message: message,
+                history: chatHistory 
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // 3. 顯示 AI 的回應
+            appendMessage(data.reply, 'ai');
+            
+            // 更新歷史紀錄，讓 AI 記得上下文
+            chatHistory.push({"role": "user", "content": message});
+            chatHistory.push({"role": "assistant", "content": data.reply});
+        });
+    }
+
+    function appendMessage(text, sender) {
+        const chatBox = document.getElementById('chat-box');
+        const div = document.createElement('div');
+        div.className = `d-flex mb-3 ${sender === 'user' ? 'justify-content-end' : 'justify-content-start'}`;
+        
+        const bubble = document.createElement('div');
+        bubble.className = sender === 'user' 
+            ? 'bg-primary text-white p-3 rounded' 
+            : 'bg-light p-3 rounded border';
+        bubble.innerText = text;
+        
+        div.appendChild(bubble);
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight; // 自動捲動到底部
+    }
+</script>
+{% endblock %}

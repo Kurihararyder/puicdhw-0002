@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>導師教學中心</title>
+    <style>
+        /* --- 全域設定 --- */
+        body { margin: 0; font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; background-color: #f0f2f5; color: #333; }
+        
+        /* --- 導航欄 --- */
+        .navbar {
+            background: #fff;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .navbar h2 { margin: 0; font-size: 1.4rem; color: #2193b0; }
+        .btn-logout {
+            text-decoration: none;
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+            padding: 6px 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .btn-logout:hover { background: #e74c3c; color: #fff; }
+
+        /* --- 主要內容區 --- */
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+        
+        /* --- 訊息提示 (Flash) --- */
+        .alert {
+            background: #d4edda; color: #155724; padding: 15px;
+            margin-bottom: 25px; border-radius: 8px; border: 1px solid #c3e6cb;
+        }
+
+        /* --- 建立班級區塊 (Hero Section) --- */
+        .create-box {
+            background: linear-gradient(135deg, #2193b0, #6dd5ed);
+            padding: 40px;
+            border-radius: 15px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 25px rgba(33, 147, 176, 0.3);
+        }
+        .create-info h2 { margin: 0 0 10px 0; font-size: 1.8rem; }
+        .create-info p { margin: 0; opacity: 0.9; font-size: 1rem; }
+        
+        .create-form { display: flex; gap: 10px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 10px; }
+        .create-form input {
+            padding: 12px;
+            border-radius: 6px;
+            border: none;
+            width: 250px;
+            font-size: 1rem;
+            outline: none;
+        }
+        .btn-create {
+            background: #fff;
+            color: #2193b0;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+        .btn-create:hover { background: #f0f0f0; transform: translateY(-2px); }
+
+        /* --- 班級列表網格 --- */
+        .section-title { color: #444; margin-bottom: 20px; border-left: 5px solid #2193b0; padding-left: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        
+        /* --- 班級卡片 --- */
+        .class-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-top: 5px solid #2193b0;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 180px;
+        }
+        .class-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        
+        .class-card h3 { margin: 0 0 15px 0; font-size: 1.3rem; color: #333; }
+        
+        .card-info { font-size: 0.95rem; color: #666; margin-bottom: 8px; }
+        .class-code {
+            background: #eee;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: bold;
+            color: #333;
+            letter-spacing: 1px;
+        }
+        
+        .card-actions { margin-top: auto; text-align: right; }
+        .btn-manage {
+            text-decoration: none;
+            color: #fff;
+            background-color: #2193b0;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: 0.2s;
+            display: inline-block;
+        }
+        .btn-manage:hover { background-color: #1a7a92; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <h2>👨‍🏫 導師管理介面</h2>
+        <a href="/logout" class="btn-logout">登出</a>
+    </nav>
+
+    <div class="container">
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert">
+                    {{ messages[0] }}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="create-box">
+            <div class="create-info">
+                <h2>建立新班級</h2>
+                <p>輸入班級名稱，系統將自動產生專屬的加入代碼。</p>
+            </div>
+            
+            <form class="create-form" action="{{ url_for('create_class') }}" method="POST">
+                <input type="text" name="class_name" placeholder="例如：日文 N3 衝刺班" required>
+                <button type="submit" class="btn-create">立即開班</button>
+            </form>
+        </div>
+
+        <h3 class="section-title">我管理的班級</h3>
+        
+        <div class="grid">
+            {% for classroom in classrooms %}
+            <div class="class-card">
+                <div>
+                    <h3>{{ classroom.name }}</h3>
+                    <div class="card-info">
+                        班級代碼：<span class="class-code">{{ classroom.code }}</span>
+                    </div>
+                    <div class="card-info">
+                        👥 學生人數：{{ classroom.students|length }} 人
+                    </div>
+                </div>
+                
+                <div class="card-actions">
+                    <a href="{{ url_for('class_dashboard', class_id=classroom.id) }}" class="btn-manage">
+                        進入班級管理 &rarr;
+                    </a>
+                </div>
+            </div>
+            {% else %}
+                <div style="grid-column: 1 / -1; text-align: center; color: #888; padding: 40px;">
+                    <p>目前還沒有任何班級，趕快在上方建立一個吧！</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+</html>

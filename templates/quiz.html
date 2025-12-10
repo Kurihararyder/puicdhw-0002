@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">📝 AI 無限單字測驗</h4>
+            </div>
+            <div class="card-body">
+                
+                <div id="level-selector" class="text-center mb-4">
+                    <p class="lead">請選擇要挑戰的等級：</p>
+                    <button onclick="startQuiz('N5')" class="btn btn-outline-success m-1">N5</button>
+                    <button onclick="startQuiz('N4')" class="btn btn-outline-success m-1">N4</button>
+                    <button onclick="startQuiz('N3')" class="btn btn-outline-success m-1">N3</button>
+                    <button onclick="startQuiz('N2')" class="btn btn-outline-success m-1">N2</button>
+                    <button onclick="startQuiz('N1')" class="btn btn-outline-success m-1">N1</button>
+                </div>
+
+                <div id="loading" class="text-center d-none py-5">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3 text-muted">AI 老師正在翻書出題中...🧠</p>
+                </div>
+
+                <div id="quiz-area" class="d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="badge bg-secondary" id="current-level-tag">N?</span>
+                        <span class="text-muted">單選題</span>
+                    </div>
+                    
+                    <h3 id="question-text" class="mb-4 fw-bold">題目載入中...</h3>
+                    
+                    <div class="d-grid gap-2" id="options-container">
+                        </div>
+                </div>
+
+                <div id="result-area" class="d-none mt-4 pt-4 border-top">
+                    <h4 id="result-title" class="fw-bold"></h4>
+                    <div class="alert alert-light border" id="explanation-text"></div>
+                    <button onclick="fetchQuestion()" class="btn btn-primary w-100 mt-2">下一題 ➡</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentLevel = 'N3';
+    let currentAnswer = '';
+
+    function startQuiz(level) {
+        currentLevel = level;
+        document.getElementById('current-level-tag').innerText = level;
+        document.getElementById('level-selector').classList.add('d-none');
+        fetchQuestion();
+    }
+
+    function fetchQuestion() {
+        // UI 重置
+        document.getElementById('quiz-area').classList.add('d-none');
+        document.getElementById('result-area').classList.add('d-none');
+        document.getElementById('loading').classList.remove('d-none');
+
+        // 呼叫後端 API
+        fetch('/api/quiz/generate', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ level: currentLevel })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.error) {
+                alert('出錯了：' + data.error);
+                // 如果出錯，把 Loading 藏起來，顯示回選單
+                document.getElementById('loading').classList.add('d-none');
+                document.getElementById('level-selector').classList.remove('d-none');
+                return;
+            }
+            renderQuestion(data);
+        })
+        .catch(err => {
+            console.error(err);
+            alert("連線錯誤，請稍後再試");
+            document.getElementById('loading').classList.add('d-none');
+            document.getElementById('level-selector').classList.remove('d-none');
+        });
+    }
+
+    function renderQuestion(data) {
+        document.getElementById('loading').classList.add('d-none');
+        document.getElementById('quiz-area').classList.remove('d-none');
+        
+        document.getElementById('question-text').innerText = data.question;
+        currentAnswer = data.answer; // 這裡存的是後端傳來的正確答案文字
+        
+        const container = document.getElementById('options-container');
+        container.innerHTML = ''; // 清空舊選項
+
+        data.options.forEach(option => {
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-outline-dark text-start p-3 fs-5';
+            btn.innerText = option;
+            // 點擊時，把「按鈕上的文字 (option)」跟「正確答案 (data.answer)」做比對
+            btn.onclick = () => checkAnswer(btn, option, data.explanation);
+            container.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(btnElement, selected, explanation) {
+        // 鎖定所有按鈕不能再按
+        const allBtns = document.querySelectorAll('#options-container button');
+        allBtns.forEach(btn => btn.disabled = true);
+
+        const resultArea = document.getElementById('result-area');
+        const resultTitle = document.getElementById('result-title');
+        const explanationText = document.getElementById('explanation-text');
+        
+        resultArea.classList.remove('d-none');
+        explanationText.innerText = explanation;
+
+        let score = 0;
+
+        // 這裡就是關鍵：文字比對
+        if (selected === currentAnswer) {
+            // 答對
+            btnElement.classList.remove('btn-outline-dark');
+            btnElement.classList.add('btn-success');
+            resultTitle.innerHTML = "🎉 正解！太棒了！";
+            resultTitle.className = "fw-bold text-success";
+            score = 100;
+        } else {
+            // 答錯
+            btnElement.classList.remove('btn-outline-dark');
+            btnElement.classList.add('btn-danger');
+            
+            // 標示出正確答案是哪個
+            allBtns.forEach(btn => {
+                if (btn.innerText === currentAnswer) {
+                    btn.classList.remove('btn-outline-dark');
+                    btn.classList.add('btn-success');
+                }
+            });
+
+            resultTitle.innerHTML = "😢 答錯了... 正確答案是 " + currentAnswer;
+            resultTitle.className = "fw-bold text-danger";
+            score = 0;
+        }
+
+        // 把成績存回資料庫
+        saveScore(score);
+    }
+
+    function saveScore(score) {
+        fetch('/api/quiz/save', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ 
+                level: currentLevel, 
+                score: score 
+            })
+        });
+    }
+</script>
+{% endblock %}

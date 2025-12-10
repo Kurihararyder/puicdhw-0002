@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <div style="width: 80px; height: 80px; background-color: #e9ecef; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 2rem;">
+                        👤
+                    </div>
+                </div>
+                <h3>{{ name }}</h3>
+                <p class="text-muted">日文學習者</p>
+                <hr>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('chat_scenario') }}" class="btn btn-primary">
+                        💬 AI 情境對話練習
+                    </a>
+                    
+                    <a href="{{ url_for('quiz_page') }}" class="btn btn-success">
+                        📝 AI 無限單字測驗
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">📊 最近的學習紀錄</h5>
+            </div>
+            <div class="card-body">
+                {% if logs %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>活動類型</th>
+                                    <th>分數/結果</th>
+                                    <th>時間</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in logs %}
+                                <tr>
+                                    <td>
+                                        {% if '測驗' in log.activity_type %}
+                                            📝 {{ log.activity_type }}
+                                        {% else %}
+                                            💬 {{ log.activity_type }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if log.score == 100 %}
+                                            <span class="badge bg-success">💯 滿分</span>
+                                        {% elif log.score >= 60 %}
+                                            <span class="badge bg-primary">{{ log.score }} 分</span>
+                                        {% elif log.score == 0 %}
+                                            <span class="badge bg-danger">答錯</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ log.score }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-muted small">
+                                        {{ log.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5 text-muted">
+                        <div style="font-size: 3rem; margin-bottom: 10px;">📉</div>
+                        <p>目前還沒有任何學習紀錄喔！</p>
+                        <p>快點擊左邊的按鈕開始你的第一次練習吧。</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

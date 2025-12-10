@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日語學習系統 - 首頁</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5f7fa;
+            --text-color: #333;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", "Heiti TC", sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* 頂部導覽列 */
+        header {
+            background-color: #fff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        /* 主要內容區 */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        p.subtitle {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            margin-bottom: 3rem;
+        }
+
+        /* 卡片容器 */
+        .portal-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* 角色入口卡片 */
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            width: 250px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-top: 5px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+
+        /* 不同角色的顏色 */
+        .card.student { border-top-color: #2ecc71; }
+        .card.teacher { border-top-color: #f1c40f; }
+        .card.admin { border-top-color: #e74c3c; }
+
+        .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .card h3 {
+            margin: 0 0 1rem 0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-student { background-color: #2ecc71; }
+        .btn-student:hover { background-color: #27ae60; }
+
+        .btn-teacher { background-color: #f39c12; }
+        .btn-teacher:hover { background-color: #d35400; }
+
+        .btn-admin { background-color: #e74c3c; }
+        .btn-admin:hover { background-color: #c0392b; }
+
+        /* 頁尾 */
+        footer {
+            text-align: center;
+            padding: 1rem;
+            color: #95a5a6;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="/" class="logo">JP Learning System</a>
+        <span style="font-size: 0.9rem; color: #666;">v1.0.0</span>
+    </header>
+
+    <main>
+        <h1>歡迎來到日語互動學習平台</h1>
+        <p class="subtitle">請選擇您的身分進入系統</p>
+
+        <div class="portal-container">
+            <div class="card student">
+                <span class="icon">👨‍🎓</span>
+                <h3>學生專區</h3>
+                <p>進行測驗、查看作業與成績</p>
+                <a href="#" onclick="alert('學生功能尚未開發，請先去管理員後台建立帳號！')" class="btn btn-student">進入學習</a>
+            </div>
+
+            <div class="card teacher">
+                <span class="icon">👨‍🏫</span>
+                <h3>導師專區</h3>
+                <p>管理班級、指派作業與進度</p>
+                <a href="#" onclick="alert('導師功能尚未開發')" class="btn btn-teacher">管理班級</a>
+            </div>
+
+            <div class="card admin">
+                <span class="icon">🔧</span>
+                <h3>系統管理員</h3>
+                <p>使用者管理、系統設定與維護</p>
+                <a href="/admin" class="btn btn-admin">進入後台</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2025 JP Learning System. All Rights Reserved.
+    </footer>
+
+</body>
+</html>

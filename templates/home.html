@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>我的學習中心</title>
+    <style>
+        body { margin: 0; font-family: 'Microsoft JhengHei', sans-serif; background-color: #fafafa; }
+        
+        /* 頂部歡迎區 */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 40px 30px; text-align: center;
+        }
+        .hero h1 { margin: 0; font-size: 2rem; }
+        .hero-actions { margin-top: 20px; }
+        .btn-link { color: white; text-decoration: none; margin: 0 10px; border: 1px solid rgba(255,255,255,0.5); padding: 5px 15px; border-radius: 20px; transition: 0.3s; }
+        .btn-link:hover { background: white; color: #764ba2; }
+
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+
+        /* 加入班級表單 */
+        .join-box {
+            background: white; padding: 20px; border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 30px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .join-form input { padding: 10px; border: 2px solid #eee; border-radius: 5px; width: 200px; outline: none; }
+        .join-form button { background: #2ecc71; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        
+        /* 卡片網格 */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s; border-top: 4px solid #667eea; text-decoration: none; color: inherit; display: block; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .card h3 { margin: 0 0 10px 0; color: #333; }
+        .card p { color: #666; font-size: 0.9rem; }
+
+        /* AI 工具區 */
+        .ai-tools { margin-top: 40px; }
+        .ai-card { border-top-color: #f1c40f; }
+        .ai-chat-card { border-top-color: #e74c3c; }
+        
+        /* 訊息提示 */
+        .alert { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="hero">
+        <h1>こんにちは, {{ user.username }}！</h1>
+        <p>今天想學點什麼呢？</p>
+        <div class="hero-actions">
+            <a href="/dashboard" class="btn-link">📊 個人學習紀錄</a>
+            <a href="/logout" class="btn-link">登出帳戶</a>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert">{{ messages[0] }}</div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="join-box">
+            <div>
+                <h3 style="margin: 0;">加入新班級</h3>
+                <p style="margin: 5px 0 0; color: #888; font-size: 0.9rem;">輸入老師給的 6 碼代碼</p>
+            </div>
+            <form class="join-form" action="/join_class" method="POST">
+                <input type="text" name="class_code" placeholder="輸入班級代碼" required>
+                <button type="submit">加入</button>
+            </form>
+        </div>
+
+        <h3 style="color: #444;">📚 我的課程班級</h3>
+        <div class="grid">
+            {% for classroom in user.enrolled_classes %}
+            <a href="{{ url_for('student_class_view', class_id=classroom.id) }}" class="card">
+                <h3>{{ classroom.name }}</h3>
+                <p>導師：{{ classroom.teacher.username }}</p>
+                <p style="margin-top: 15px; font-weight: bold; color: #667eea;">進入教室 &rarr;</p>
+            </a>
+            {% else %}
+                <div style="color: #999; grid-column: 1/-1; text-align: center; padding: 20px;">
+                    目前還沒加入任何班級，試試上方的加入功能吧！
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="ai-tools">
+            <h3 style="color: #444;">🤖 AI 智能練習</h3>
+            <div class="grid">
+                <a href="{{ url_for('quiz_page') }}" class="card ai-card">
+                    <h3>📝 AI 無限單字測驗</h3>
+                    <p>選擇 N5~N1 等級，AI 自動出題考你單字力。</p>
+                </a>
+                
+                <a href="{{ url_for('chat_scenario') }}" class="card ai-chat-card">
+                    <h3>💬 便利商店情境對話</h3>
+                    <p>與 AI 店員練習對話，提升口語反應能力。</p>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

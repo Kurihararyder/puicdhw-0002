@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>導師教學中心</title>
+    <style>
+        body { margin: 0; font-family: 'Microsoft JhengHei', sans-serif; background-color: #f0f2f5; }
+        .navbar { background: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+        
+        /* 建立班級區塊 */
+        .create-box { background: linear-gradient(135deg, #2193b0, #6dd5ed); padding: 30px; border-radius: 12px; color: white; display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(33, 147, 176, 0.3); }
+        .create-box input { padding: 10px; border-radius: 5px; border: none; width: 300px; }
+        .btn-create { background: #fff; color: #2193b0; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        
+        /* 班級列表 */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .class-card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-top: 5px solid #2193b0; }
+        .class-code { background: #eee; padding: 5px 10px; border-radius: 4px; font-family: monospace; font-size: 1.2rem; color: #333; letter-spacing: 2px; }
+        .student-count { color: #666; margin-top: 10px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h2>👨‍🏫 導師管理介面</h2>
+        <a href="/logout" style="text-decoration: none; color: #e74c3c; border: 1px solid #e74c3c; padding: 5px 15px; border-radius: 5px;">登出</a>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div style="background: #d4edda; color: #155724; padding: 10px; margin-bottom: 20px; border-radius: 5px;">
+                    {{ messages[0] }}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="create-box">
+            <div>
+                <h2 style="margin: 0 0 10px 0;">建立新班級</h2>
+                <p style="margin: 0; opacity: 0.9;">輸入班級名稱，系統將自動產生加入代碼</p>
+            </div>
+            <form action="{{ url_for('create_class') }}" method="POST" style="display: flex; gap: 10px;">
+                <input type="text" name="class_name" placeholder="例如：日文 N3 衝刺班" required>
+                <button type="submit" class="btn-create">立即開班</button>
+            </form>
+        </div>
+
+        <h3 style="color: #444;">我管理的班級</h3>
+        <div class="grid">
+            {% for classroom in classrooms %}
+            <div class="class-card">
+                <h3>{{ classroom.name }}</h3>
+                <p>班級代碼：<span class="class-code">{{ classroom.code }}</span></p>
+                <div class="student-count">
+                    👥 目前學生：{{ classroom.students|length }} 人
+                </div>
+                <div style="margin-top: 20px;">
+                    <a href="#" style="text-decoration: none; color: #2193b0; font-weight: bold;">進入班級管理 &rarr;</a>
+                </div>
+            </div>
+            {% else %}
+                <p style="color: #888;">目前還沒有任何班級，趕快建立一個吧！</p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

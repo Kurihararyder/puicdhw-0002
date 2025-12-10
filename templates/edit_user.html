@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>編輯使用者</title>
+    <style>
+        body {
+            margin: 0; font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: #f4f7f6;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh;
+        }
+        .edit-card {
+            background: white; padding: 40px; border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px;
+        }
+        h2 { margin-top: 0; color: #333; text-align: center; margin-bottom: 25px;}
+        
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #666; font-weight: bold;}
+        input, select {
+            width: 100%; padding: 10px; border: 2px solid #eee; border-radius: 8px;
+            box-sizing: border-box; font-size: 1rem; transition: 0.3s;
+        }
+        input:focus, select:focus { border-color: #667eea; outline: none; }
+        
+        .hint { font-size: 0.8rem; color: #999; margin-top: 5px; }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 30px; }
+        .btn { 
+            flex: 1; padding: 12px; border: none; border-radius: 8px; 
+            cursor: pointer; font-weight: bold; font-size: 1rem; 
+            text-align: center; text-decoration: none; transition: 0.2s;
+        }
+        
+        .btn-save { background: linear-gradient(to right, #667eea, #764ba2); color: white; }
+        .btn-cancel { background: #eee; color: #666; }
+        
+        .btn-save:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn-cancel:hover { background: #e0e0e0; }
+    </style>
+</head>
+<body>
+
+    <div class="edit-card">
+        <h2>編輯使用者資料</h2>
+        
+        <form method="POST">
+            <div class="form-group">
+                <label>使用者名稱</label>
+                <input type="text" name="username" value="{{ user.username }}" required>
+            </div>
+
+            <div class="form-group">
+                <label>權限角色</label>
+                <select name="role">
+                    <option value="user" {% if user.role == 'user' %}selected{% endif %}>一般會員 (User)</option>
+                    <option value="teacher" {% if user.role == 'teacher' %}selected{% endif %}>導師 (Teacher)</option>
+                    <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>管理員 (Admin)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>重設密碼</label>
+                <input type="password" name="password" placeholder="若不修改請留空">
+                <div class="hint">⚠️ 只有在需要強制改密碼時才輸入</div>
+            </div>
+
+            <div class="btn-group">
+                <a href="/admin" class="btn btn-cancel">取消</a>
+                <button type="submit" class="btn btn-save">儲存變更</button>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

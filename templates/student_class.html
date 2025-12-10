@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ classroom.name }} - 班級內容</title>
+    <style>
+        body { margin: 0; font-family: 'Microsoft JhengHei', sans-serif; background-color: #f4f7f6; }
+        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        
+        .header { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 30px; border-left: 5px solid #2ecc71; }
+        .btn-back { text-decoration: none; color: #666; display: inline-block; margin-bottom: 15px; }
+        
+        .assignment-card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .assignment-title { font-size: 1.2rem; font-weight: bold; color: #333; margin-bottom: 10px; }
+        .assignment-meta { font-size: 0.9rem; color: #888; margin-bottom: 10px; }
+        .assignment-content { color: #555; line-height: 1.6; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="/home" class="btn-back">&larr; 回首頁</a>
+        
+        <div class="header">
+            <h1 style="margin: 0;">{{ classroom.name }}</h1>
+            <p style="color: #666; margin-top: 10px;">導師：{{ classroom.teacher.username }}</p>
+        </div>
+
+        <h3 style="color: #444;">📋 作業公告板</h3>
+        
+        {% for assignment in classroom.assignments %}
+        <div class="assignment-card">
+            <div class="assignment-title">{{ assignment.title }}</div>
+            <div class="assignment-meta">發布日期：{{ assignment.created_at.strftime('%Y-%m-%d') }}</div>
+            <div class="assignment-content">{{ assignment.content }}</div>
+        </div>
+        {% else %}
+            <p style="text-align: center; color: #999;">目前老師還沒有發布任何作業喔！</p>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

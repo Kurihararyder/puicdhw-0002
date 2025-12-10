@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>AI 智能家教</title>
+    <style>
+        body { margin: 0; font-family: 'Microsoft JhengHei', sans-serif; background-color: #eef2f3; }
+        .chat-container { max-width: 800px; margin: 30px auto; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
+        
+        .header { background: linear-gradient(to right, #8e2de2, #4a00e0); color: white; padding: 20px; text-align: center; }
+        
+        .chat-box { padding: 30px; min-height: 300px; background: #fafafa; }
+        .ai-msg { background: #fff; border-left: 4px solid #4a00e0; padding: 20px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); line-height: 1.6; white-space: pre-wrap; }
+        
+        .input-area { padding: 20px; background: white; border-top: 1px solid #eee; display: flex; gap: 10px; }
+        input { flex: 1; padding: 12px; border: 2px solid #eee; border-radius: 25px; outline: none; transition: 0.3s; }
+        input:focus { border-color: #8e2de2; }
+        button { background: #4a00e0; color: white; border: none; padding: 10px 25px; border-radius: 25px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #3a00b0; }
+        
+        .nav-home { display: block; text-align: center; margin-top: 20px; color: #666; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <div class="header">
+            <h2>🤖 日語 AI 智能家教</h2>
+            <p>輸入你想練習的主題，AI 馬上出題考你！</p>
+        </div>
+
+        <div class="chat-box">
+            {% if response %}
+                <div class="ai-msg">
+                    <strong>AI 老師：</strong><br><br>
+                    {{ response }}
+                </div>
+            {% else %}
+                <div style="text-align: center; color: #aaa; margin-top: 50px;">
+                    <p>試試輸入：「N5 助詞練習」或「敬語測驗」</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <form class="input-area" method="POST">
+            <input type="text" name="topic" placeholder="請輸入想練習的主題 (例如：N3 聽力關鍵字、動詞變化...)" required value="{{ topic }}">
+            <button type="submit">生成題目</button>
+        </form>
+    </div>
+    
+    <a href="/home" class="nav-home">回首頁</a>
+
+</body>
+</html>
