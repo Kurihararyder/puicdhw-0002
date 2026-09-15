@@ -57,7 +57,7 @@ class LearningLog(db.Model):
 
 # --- 設定 OpenAI Client ---
 # ⚠️ 請在此填入您的 OpenAI API Key (sk- 開頭的那串)
-OPENAI_API_KEY = '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'
+OPENAI_API_KEY = ''
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
